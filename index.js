@@ -6,11 +6,15 @@ const cors = require("cors");
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
-// Middleware
+/*------------- 
+ | Middleware |
+ -------------*/
 app.use(cors());
 app.use(express.json());
 
-// Database Configuration
+/*------------------------- 
+ | Database Configuration |
+ -------------------------*/
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gi8q3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
@@ -20,19 +24,28 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
+
+    /*----------------------
+     | Database Connection |
+     ---------------------*/
+
     await client.connect();
     // console.log('database connected successfully');
     const database = client.db("mangojellyApp");
     const phoneItems = database.collection("phoneItems");
 
-    // GET API
+    /*----------
+     | GET API |
+     ---------*/
     app.get("/products", async (req, res) => {
         const cursor = phoneItems.find({});
         const allPhones = await cursor.toArray();
         res.send(allPhones);
     });
 
-    // GET Single Product
+    /*---------------------- 
+     | SINGLE DATA GET API |
+     ----------------------*/
     app.get("/products/:id", async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id) };
@@ -40,17 +53,20 @@ async function run() {
         res.send(result);
     })
 
-    // POST API
+    /*----------------
+     | DATA POST API |
+     ----------------*/
     app.post('/products', async (req, res) => {
         const data = req.body;
         console.log('hit the post api', data);
-
         const result = await phoneItems.insertOne(data);
         console.log(result);
         res.json(result);
     });
 
-    // DELETE API
+    /*------------------ 
+     | DATA DELETE API |
+     ------------------*/
     app.delete('/products/:id', async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id) };
@@ -59,7 +75,9 @@ async function run() {
 
     })
 
-    // PUT API (Update API)
+    /*---------------------------- 
+     | PUT API (DATA UPDATE API) |
+     ----------------------------*/
 
     app.put('/products/:id', async (req, res) => {
         const id = req.params.id;
