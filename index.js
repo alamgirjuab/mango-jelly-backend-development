@@ -32,6 +32,14 @@ async function run() {
         res.send(allPhones);
     });
 
+    // GET Single Product
+    app.get("/products/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const result = await phoneItems.findOne(query);
+        res.send(result);
+    })
+
     // POST API
     app.post('/products', async (req, res) => {
         const data = req.body;
